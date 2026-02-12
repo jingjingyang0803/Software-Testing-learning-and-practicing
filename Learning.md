@@ -1,3 +1,166 @@
+
+| Flaky test | 有时过，有时不过 |
+| --- | --- |
+| Mock | 可验证行为的假对象 |
+| Stub | 只返回数据的假对象 |
+| Smoke test | 快速看“还能不能用” |
+| Regression test | 新改动没弄坏旧功能 |
+| Performance test | 正常负载下快不快 |
+| Load test | 预期最大用户下稳不稳 |
+| Stress test | 超负载下什么时候崩 |
+| HIL | 真硬件 + 模拟软件 |
+
+# **Flaky Test（不稳定测试）**
+
+👉 同一份代码、同一个测试，有时通过，有时失败。
+
+为什么会这样？
+
+- 依赖时间（异步、延迟）
+- 网络 / 数据库不稳定
+- 测试之间互相影响
+- 多线程 / 并发问题
+
+例子：
+
+UI 测试里等 2 秒再点按钮，有时页面还没加载完就失败。
+
+# **Mock（模拟对象）**
+
+👉 用假的对象，来代替真实依赖，只测试你关心的逻辑。
+
+用来干嘛？
+
+- 不访问真实服务器
+- 不用真实数据库
+- 不依赖外部系统
+
+例子：
+
+测试登录逻辑时，用 mock API 直接返回“登录成功”。
+
+# **Hardware-in-the-Loop（HIL，硬件在环）**
+
+👉 真实硬件 + 模拟的软件环境一起测试。
+
+常见场景：
+
+- 嵌入式系统
+- 汽车、传感器、医疗设备
+
+例子：
+
+真实传感器接在测试台上，但输入信号是软件模拟的。
+
+# **Smoke Test（冒烟测试）**
+
+👉 快速确认系统“基本还能不能用”。
+
+特点：
+
+- 测得浅
+- 测得快
+- 失败就直接停止后续测试
+
+例子：
+
+App 能不能启动？
+
+能不能登录？
+
+主页能不能打开？
+
+# **Stub（桩）**
+
+👉 返回固定结果的简单假对象。
+
+和 Mock 的区别（重点）：
+
+- Stub：只负责“给数据”
+- Mock：还能验证“有没有被正确调用”
+
+例子：
+
+一个 stub API 永远返回：
+
+{ "status": "ok" }
+
+# **Regression Test（回归测试）**
+
+👉 确认新改动没有破坏旧功能。
+
+什么时候做？
+
+- 修 bug 后
+- 加新功能后
+- 重构后
+
+例子：
+
+加了预算功能 → 再测试原来的记账、统计功能。
+
+# **Performance Test（性能测试）**
+
+👉 系统在正常负载下跑得快不快、稳不稳。
+
+关注点：
+
+- 响应时间
+- 吞吐量
+- 资源使用（CPU / 内存）
+
+例子：
+
+100 个用户同时用 App，页面打开要多久？
+
+# **Stress Test（压力测试）**
+
+👉 把系统逼到极限，看它什么时候崩。
+
+目的：
+
+- 找系统最大承受能力
+- 看崩溃时是否“优雅失败”
+
+例子：
+
+一直增加用户数，直到服务器挂掉。
+
+# **Load Test（负载测试）**
+
+👉 在“预期的最大使用量”下测试系统表现。
+
+和压力测试的区别：
+
+- Load test：正常但高负载
+- Stress test：超出正常范围
+
+例子：
+
+预计高峰期 1000 用户 → 测 1000 用户是否还能稳定运行。
+
+
+---
+### Coverage meters
+
+### a) Statement coverage（语句覆盖）
+
+https://www.geeksforgeeks.org/software-testing/statement-coverage-testing/
+
+### b) Decision / Branch coverage（判定/分支覆盖）
+
+https://www.geeksforgeeks.org/software-engineering/what-is-branch-coverage-in-unit-testing/
+
+### c) Condition coverage（条件覆盖）
+
+https://www.tutorialspoint.com/software_testing_dictionary/condition_coverage_testing.htm
+
+### d) Multiple Condition Coverage（MCC，多条件覆盖）
+
+https://www.qt.io/quality-assurance/coco/feature-multiple-condition-coverage-mcc
+
+---
+
 ### ISTQB:s testing related vocabulary
 
 1st term: An **anti-pattern** is like a bad habit that seems helpful at first but actually makes things worse. It's similar to always taking a shortcut through a neighborhood that has lots of stop signs - you think it's faster, but it actually takes longer than the main road. In software testing, this might be skipping documentation to "save time" but then causing confusion later when nobody remembers how the tests work.
@@ -188,48 +351,6 @@ Negative testing is a testing approach that focuses on verifying that the system
 
 Sowing or planting errors is a technique where known defects are intentionally inserted into the software to evaluate the effectiveness of the testing process. The ratio of found planted errors to total planted errors can be used to estimate the number of real defects remaining in the system.
 
-### 2. Coverage meters
-
-**a) Statement coverage (1.5p)**
-
-Statement coverage measures the percentage of executable statements that have been executed by the test suite. For 100% statement coverage, every line of code must be executed at least once.
-
-**Minimum test case set:**
-
-- Test 1: a=1, b=0, c=-1 (det=4, both sides of OR evaluated, r1=2, r2=-2, returns true)
-
-**b) Decision/branch coverage (1.5p)**
-
-Decision coverage measures the percentage of decision outcomes (true/false) that have been tested. Each if-statement must evaluate to both true and false.
-
-**Minimum test case set:**
-
-- Test 1: a=1, b=0, c=-1 (det=4 ≥ 0 and a≠0, returns true)
-- Test 2: a=1, b=0, c=1 (det=-4 < 0, returns false)
-- Test 3: a=0, b=1, c=1 (a==0, returns false)
-
-**c) Condition coverage (1.5p)**
-
-Condition coverage requires each boolean sub-expression (condition) to evaluate to both true and false independently.
-
-**Minimum test case set:**
-
-- Test 1: a=1, b=0, c=-1 (det=4 > 0 [T], a≠0 [T], returns true)
-- Test 2: a=1, b=0, c=1 (det=-4 < 0 **[F]**, a≠0 [T], returns false)
-- Test 3: a=0, b=1, c=1 (det=0 [F], a==0 **[F]**, returns false)
-
-**d) Multiple condition coverage (1.5p)**
-
-Multiple condition coverage (MCC) requires testing all possible combinations of boolean conditions in each decision.
-
-**Minimum test case set:**
-
-- Test 1: det < 0 [T], a == 0 [T] → a=0, b=1, c=1 (det=0 fails first, need det<0)
-- Test 2: det < 0 [T], a == 0 [F] → a=1, b=0, c=1 (det=-4, a=1, returns false)
-- Test 3: det < 0 [F], a == 0 [T] → a=0, b=0, c=0 (det=0, a=0, returns false)
-- Test 4: det < 0 [F], a == 0 [F] → a=1, b=0, c=-1 (det=4, a=1, returns true)
-
----
 
 ### Regression testing（回归测试）
 
